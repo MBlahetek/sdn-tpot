@@ -5,10 +5,13 @@ Created on 28.04.2017
 '''
 
 import docker
+import reconffunctions
 
 client = docker.from_env()
 
 bridge_docker = client.networks.list('bridge')[0]
 bridge_docker_container = bridge_docker.containers
 
-print bridge_docker_container[0].attrs
+for i in bridge_docker_container:
+    
+
