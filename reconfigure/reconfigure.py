@@ -10,4 +10,5 @@ client = docker.from_env()
 
 networklist = client.networks.list()
 
+
 print networklist
