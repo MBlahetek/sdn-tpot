@@ -8,7 +8,7 @@ import docker
 
 client = docker.from_env()
 
-networklist = client.networks.list()
+bridge_docker = client.networks.list('bridge')[0]
+bridge_docker_container = bridge_docker.containers
 
-
-print networklist
+print bridge_docker_container[0].attrs
