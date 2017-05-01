@@ -20,9 +20,9 @@ for i in bridge_docker_container:
     ip = str(attributes["NetworkSettings"]["Networks"]["bridge"]["IPAddress"])
     container_list.append((name, ip))
     
-ovs_bridge_name = rf.get_ovs_bridge_name
+ovs_bridge_name = rf.get_ovs_bridge_name()
 if ovs_bridge_name is None:
-    raise "no ovs bridge found"
+    raise NameError("no ovs bridge found")
 print ovs_bridge_name
 
     
