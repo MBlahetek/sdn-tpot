@@ -26,7 +26,7 @@ for i in bridge_docker_container:
     
 for i in container_ip_list:
     name = i[0]
-    container = client.get(name)
+    container = client.containers.get(name)
     ip_bridge_ovs = str(container.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"])
     i = i.append(ip_bridge_ovs)
     
