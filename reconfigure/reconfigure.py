@@ -36,10 +36,19 @@ if ovs_bridge_name is None:
 print ovs_bridge_name
 
 table_filter = iptc.Table(iptc.Table.FILTER)
-table_nat = iptc.Table(iptc.Table.NAT)
+#table_nat = iptc.Table(iptc.Table.NAT)
 
-chains_filter = table_filter.chains
-chains_nat = table_nat.chains
+chain_filter_forward = iptc.Chain(table_filter, "FORWARD")
+chain_filter_docker = iptc.Chain(table_filter, "DOCKER")
+#chains_nat = table_nat.chains
 
-print chains_filter
-print chains_nat
+rules_filter_forward = chain_filter_forward.rules
+
+for r in rules_filter_forward:
+    print r.in_interface
+    print r.out_interface
+
+
+
+#print chains_filter
+#print chains_nat
