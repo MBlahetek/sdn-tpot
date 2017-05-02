@@ -38,7 +38,7 @@ for i in container_ip_list:
     container = client.containers.get(name)
     ip_bridge_ovs = str(container.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"])
     i = i.append(ip_bridge_ovs)
-    print "   container :" + name + " | docker0 IP: " + ip + " | " + ovs_bridge_name + " IP: " + ip_bridge_ovs
+    print "   container: " + name + " | docker0 IP: " + ip + " | " + ovs_bridge_name + " IP: " + ip_bridge_ovs
 print "##########"
 
 table_filter = iptc.Table(iptc.Table.FILTER)

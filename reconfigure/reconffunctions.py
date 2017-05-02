@@ -46,7 +46,7 @@ def update_iptables_chain(chain, ip_map, ovs_bridge_name):
                     new_rule.src = ip[2] + "/" + old_subnetmask
                     break
         else:
-            new_rule.src = "0.0.0.0/0.0.0.0"
+            new_rule.src = t.src
                 
         if r.dst == "172.17.0.0/255.255.0.0":
             new_rule.dst = "172.18.0.0/255.255.0.0" 
@@ -58,7 +58,7 @@ def update_iptables_chain(chain, ip_map, ovs_bridge_name):
                     new_rule.dst = ip[2] + "/" + old_subnetmask
                     break
         else:
-            new_rule.dst = "0.0.0.0/0.0.0.0"
+            new_rule.dst = r.dst
         
         new_rule.protocol = r.protocol
         
@@ -69,8 +69,7 @@ def update_iptables_chain(chain, ip_map, ovs_bridge_name):
         print "      created rule " + str(counter) + " of " + str(number)
         counter += 1
     
-    for r in rules:
-        chain.delete_rule(r)
+    chain.flush()
     
     counter = 1
     for r in new_rules:
