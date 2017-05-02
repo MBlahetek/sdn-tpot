@@ -46,7 +46,7 @@ new_rules = []
 for r in rules_filter_forward:
     new_rule = iptc.Rule()
     
-    if not r.matches:
+    if r.matches:
         match = r.matches[0]
         new_rule.add_match(match)
     if r.in_interface is not None:
@@ -63,6 +63,6 @@ for r in rules_filter_forward:
     new_rules.append(new_rule)
     
 for i in new_rules:
-    chain_filter_forward.append(i)
+    chain_filter_forward.append_rule(i)
 #print chains_filter
 #print chains_nat
