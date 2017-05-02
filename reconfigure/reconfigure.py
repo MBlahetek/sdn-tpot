@@ -45,8 +45,8 @@ chain_filter_docker = iptc.Chain(table_filter, "DOCKER")
 rules_filter_forward = chain_filter_forward.rules
 
 for r in rules_filter_forward:
-    new_rule = iptc.Rule()
-    
+    new_rule = r
+"""    
     new_rule.dst = r.dst
     new_rule.fragment = r.fragment
     #new_rule.mask = r.mask
@@ -56,23 +56,24 @@ for r in rules_filter_forward:
         new_rule.in_interface = r.in_interface
     if r.out_interface is not None:
         new_rule.out_interface = r.out_interface
-    new_rule.rule = r.rule
+    #new_rule.rule = r.rule
     new_rule.src = r.src
-    new_rule.tables = r.executables
+    #new_rule.tables = r.tables
     new_rule.target = r.target
     chain_filter_forward.append_rule(new_rule)
 """
     if r.in_interface is not None:
         if r.in_interface == "docker0":
-            r.in_interface = ovs_bridge_name
+            new_rule.in_interface = ovs_bridge_name
         elif r.in_interface == "!docker0":
-            r.in_interface = "!" + ovs_bridge_name
+            new_rule.in_interface = "!" + ovs_bridge_name
     if r.out_interface is not None:
         if r.in_interface == "docker0":
-            r.in_interface = ovs_bridge_name
+            new_rule.in_interface = ovs_bridge_name
         elif r.in_interface == "!docker0":
-            r.in_interface = "!" + ovs_bridge_name
-"""
+            new_rule.in_interface = "!" + ovs_bridge_name
+    chain_filter_forward.append_rule(new_rule)
+
 
 
 #print chains_filter
