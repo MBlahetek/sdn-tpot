@@ -12,8 +12,10 @@ def get_ovs_bridge_name():
             bridge_name = line.split(":", 1)[0]
             return str(bridge_name)
 
-def update_iptables_chain(chain, ip_map):
+def update_iptables_chain(chain, ip_map, ovs_bridge_name):
     rules = chain.rules
+    number = len(rules)
+    counter = 1
     new_rules = []
     
     for r in rules:
@@ -63,9 +65,15 @@ def update_iptables_chain(chain, ip_map):
         new_rule.target = r.target
            
         new_rules.append(new_rule)
+        
+        print "      created rule " + counter + " of " + number
+        counter += 1
     
     for r in rules:
         chain.delete_rule(r)
-
+    
+    counter = 1
     for r in new_rules:
         chain.append_rule(r)
+        print "      updated rule " + counter + " of " + number
+        counter += 1
