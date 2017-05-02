@@ -48,10 +48,7 @@ for r in rules_filter_forward:
     
     if not r.matches:
         match = r.matches[0]
-        print match.rule
-        print match.name
-        print match.match
-        print match.revision
+        new_rule.add_match(match)
     if r.in_interface is not None:
         if r.in_interface == "docker0":
             new_rule.in_interface = ovs_bridge_name
@@ -64,5 +61,8 @@ for r in rules_filter_forward:
             new_rule.out_interface = "!" + ovs_bridge_name
     new_rule.target = r.target
     new_rules.append(new_rule)
+    
+for i in new_rules:
+    chain_filter_forward.append(i)
 #print chains_filter
 #print chains_nat
