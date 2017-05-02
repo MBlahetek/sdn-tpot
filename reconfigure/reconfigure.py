@@ -45,6 +45,8 @@ rules_filter_forward = chain_filter_forward.rules
 new_rules = []
 rule_counter = 1
 for r in rules_filter_forward:
+    print r.rule
+    """
     new_rule = r
     if r.in_interface is not None:
         if r.in_interface == "docker0":
@@ -58,7 +60,7 @@ for r in rules_filter_forward:
             new_rule.out_interface = "!" + ovs_bridge_name
     chain_filter_forward.replace_rule(new_rule, rule_counter)
     rule_counter += 1    
-
+    """
 
 #print chains_filter
 #print chains_nat
