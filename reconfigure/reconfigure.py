@@ -33,7 +33,6 @@ for i in container_ip_list:
 ovs_bridge_name = rf.get_ovs_bridge_name()
 if ovs_bridge_name is None:
     raise NameError("no ovs bridge found")
-print ovs_bridge_name
 
 table_filter = iptc.Table(iptc.Table.FILTER)
 #table_nat = iptc.Table(iptc.Table.NAT)
@@ -44,23 +43,22 @@ chain_filter_docker = iptc.Chain(table_filter, "DOCKER")
 
 rules_filter_forward = chain_filter_forward.rules
 new_rules = []
-
+rule_counter = 1
 for r in rules_filter_forward:
-    
+    new_rule = r
     if r.in_interface is not None:
         if r.in_interface == "docker0":
-            r.in_interface = ovs_bridge_name
+            new_rule.in_interface = ovs_bridge_name
         elif r.in_interface == "!docker0":
-            r.in_interface = "!" + ovs_bridge_name
+            new_rule.in_interface = "!" + ovs_bridge_name
     if r.out_interface is not None:
         if r.out_interface == "docker0":
-            r.out_interface = ovs_bridge_name
+            new_rule.out_interface = ovs_bridge_name
         elif r.out_interface == "!docker0":
-            r.out_interface = "!" + ovs_bridge_name
-    #new_rules.append(new_rule)
-    
-#for i in new_rules:
-   # chain_filter_forward.append_rule(new_rule)
+            new_rule.out_interface = "!" + ovs_bridge_name
+    chain_filter_forward.replace_rule(new_rule, rule_counter)
+    rule_counter += 1    
+
 
 #print chains_filter
 #print chains_nat
