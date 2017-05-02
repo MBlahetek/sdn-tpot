@@ -49,11 +49,13 @@ for r in rules_filter_forward:
     
     new_rule.dst = r.dst
     new_rule.fragment = r.fragment
-    new_rule.mask = r.mask
-    new_rule.matches = r.matches
+    #new_rule.mask = r.mask
+    #new_rule.matches = r.matches
     new_rule.protocol = r.protocol
-    new_rule.in_interface = r.in_interface
-    new_rule.out_interface = r.out_interface
+    if r.in_interface is not None:
+        new_rule.in_interface = r.in_interface
+    if r.out_interface is not None:
+        new_rule.out_interface = r.out_interface
     new_rule.rule = r.rule
     new_rule.src = r.src
     new_rule.tables = r.executables
