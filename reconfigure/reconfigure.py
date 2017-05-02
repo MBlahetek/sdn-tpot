@@ -20,7 +20,7 @@ if ovs_bridge_name is None:
 container_ip_list = []
 
 #Connect all docker0 containers to the ovs bridge
-print "connecting docker container to ovs-bridge:" + ovs_bridge_name + "..."
+print "connecting docker container to ovs-bridge: " + ovs_bridge_name + "..."
 for i in bridge_docker_container:
     attributes = i.attrs
     name = str(attributes["Name"])
@@ -34,10 +34,11 @@ print "##########"
 print "generating ip mapping..."    
 for i in container_ip_list:
     name = i[0]
+    ip = i[1]
     container = client.containers.get(name)
     ip_bridge_ovs = str(container.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"])
     i = i.append(ip_bridge_ovs)
-    print "   container :" + name + " | docker0 IP: " + i[1] + " | " + ovs_bridge_name + " IP: " + ip_bridge_ovs
+    print "   container :" + name + " | docker0 IP: " + ip + " | " + ovs_bridge_name + " IP: " + ip_bridge_ovs
 print "##########"
 
 table_filter = iptc.Table(iptc.Table.FILTER)
@@ -56,7 +57,12 @@ print "   updating table:FILTER chain:POSTROUTING..."
 rf.update_iptables_chain(chain_nat_postrouting, container_ip_list, ovs_bridge_name)
 print "   updating table:FILTER chain:DOCKER..."
 rf.update_iptables_chain(chain_nat_docker, container_ip_list, ovs_bridge_name)
+print "##########"
 
+print "disconnecting docker container from docker0..."
 for i in container_ip_list:
     name = i[0]
     bridge_docker.disconnect(name)
+    print "   container disconnected: " + name
+print "##########"
+print ">>> reconfiguration complete! <<<"

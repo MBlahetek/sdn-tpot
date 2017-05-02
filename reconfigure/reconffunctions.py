@@ -66,7 +66,7 @@ def update_iptables_chain(chain, ip_map, ovs_bridge_name):
            
         new_rules.append(new_rule)
         
-        print "      created rule " + counter + " of " + number
+        print "      created rule " + str(counter) + " of " + str(number)
         counter += 1
     
     for r in rules:
@@ -75,5 +75,5 @@ def update_iptables_chain(chain, ip_map, ovs_bridge_name):
     counter = 1
     for r in new_rules:
         chain.append_rule(r)
-        print "      updated rule " + counter + " of " + number
+        print "      updated rule " + str(counter) + " of " + str(number)
         counter += 1
