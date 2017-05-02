@@ -37,7 +37,9 @@ def update_iptables_chain(chain, ip_map, ovs_bridge_name):
                 new_rule.out_interface = "!" + ovs_bridge_name
         
         if r.src == "172.17.0.0/255.255.0.0":
-            new_rule.src = "172.18.0.0/255.255.0.0" 
+            new_rule.src = "172.18.0.0/255.255.0.0"
+        if r.src == "127.0.0.1/255.255.255.255":
+            new_rule.src = r.src
         elif r.src != "0.0.0.0/0.0.0.0":
             old_ip = r.src.split("/", 1)[0]
             old_subnetmask = r.src.split("/", 1)[1]
@@ -49,7 +51,9 @@ def update_iptables_chain(chain, ip_map, ovs_bridge_name):
             new_rule.src = r.src
                 
         if r.dst == "172.17.0.0/255.255.0.0":
-            new_rule.dst = "172.18.0.0/255.255.0.0" 
+            new_rule.dst = "172.18.0.0/255.255.0.0"
+        if r.dst == "127.0.0.1/255.255.255.255":
+            new_rule.dst = r.dst 
         elif r.dst != "0.0.0.0/0.0.0.0":
             old_ip = r.dst.split("/", 1)[0]
             old_subnetmask = r.dst.split("/", 1)[1]
