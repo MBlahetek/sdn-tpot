@@ -45,8 +45,16 @@ chain_filter_docker = iptc.Chain(table_filter, "DOCKER")
 rules_filter_forward = chain_filter_forward.rules
 
 for r in rules_filter_forward:
-    print r.in_interface
-    print r.out_interface
+    if r.in_interface is not None:
+        if r.in_interface == "docker0":
+            r.in_interface = ovs_bridge_name
+        elif r.in_interface == "!docker0":
+            r.in_interface = "!" + ovs_bridge_name
+    if r.out_interface is not None:
+        if r.in_interface == "docker0":
+            r.in_interface = ovs_bridge_name
+        elif r.in_interface == "!docker0":
+            r.in_interface = "!" + ovs_bridge_name        
 
 
 
