@@ -8,12 +8,6 @@ import docker
 import reconffunctions as rf
 
 client = docker.from_env()
-print "creating ovs network: sdnnet..."
-client.networks.create("sdnnet", driver="ovs")
-print "pulling floodlight docker image..."
-client.images.pull(bladdl/floodlight)
-print "creating floodlight container..."
-client.containers.run(bladdl/floodlight, name=floodlight, detach=True, ports= {'6653/tcp': 6653,'9090/tcp': 9090}, networks=["bridge"], volumes={'/data': {'bind': '/home/hostdata', 'mode': 'rw'}})
 
 bridge_docker = client.networks.list('bridge')[0]
 bridge_ovs = client.networks.list('sdnnet')[0]
