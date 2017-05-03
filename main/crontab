@@ -1,0 +1,42 @@
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow user  command
+17 *    * * *   root    cd / && run-parts --report /etc/cron.hourly
+25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+#
+
+# Show running containers every 60s via /dev/tty2
+#*/2 * * * *    root    status.sh > /dev/tty2
+
+# Check if containers and services are up
+#*/5 * * * *     root    check.sh
+
+# Example for alerta-cli IP update
+#*/5 * * * *    root    alerta --endpoint-url http://<ip>:<port>/api delete --filters resource=<host> && alerta --endpoint-url http://<ip>:<port>/api send -e IP -r <host> -E Production -s ok -S T-Pot -t $(cat /data/elk/logstash/mylocal.ip) --status open
+
+# Check if updated images are available and download them
+#27 1 * * *      root    for i in $(cat /data/images.conf); do docker pull dtagdevsec/$i:latest1610; done
+
+# Restart docker service and containers
+#27 3 * * *      root    dcres.sh
+
+# Delete elastic indices older than 90 days (kibana index is omitted by default)
+27 4 * * *      root    docker exec elk bash -c '/usr/local/bin/curator --host 127.0.0.1 delete indices --older-than 90 --time-unit days --timestring \%Y.\%m.\%d'
+
+# Update IP and erase check.lock if it exists
+#27 15 * * *     root    /etc/rc.local
+
+# Daily reboot
+#27 23 * * *     root    reboot
+
+# Check for updated packages every sunday, upgrade and reboot
+#27 16 * * 0     root    apt-get autoclean -y && apt-get autoremove -y && apt-get update -y && apt-get upgrade -y && sleep 10 && reboot
