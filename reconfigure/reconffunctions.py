@@ -114,7 +114,7 @@ def update_iptables_chain_dnat(chain, ip_map, ovs_bridge_name):
             new_rules.append(new_rule)
             print "      created rule " + str(counter) + " of " + str(number)
             counter += 1
-        chain.flush()
+    chain.flush()
     
     counter = 1
     for r in new_rules:
