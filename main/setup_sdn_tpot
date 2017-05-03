@@ -1,0 +1,6 @@
+#!/bin/bash
+
+modprobe openvswitch
+apt-get install -y docker-compose
+docker-compose up -d
+pip install --upgrade python-iptables
