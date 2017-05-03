@@ -18,6 +18,7 @@ if ovs_bridge_name is None:
     raise NameError("no ovs bridge found")
 
 container_ip_list = []
+container_port_list = []
 
 #Connect all docker0 containers to the ovs bridge
 print "connecting docker container to ovs-bridge: " + ovs_bridge_name + "..."
@@ -26,8 +27,13 @@ for i in bridge_docker_container:
     name = str(attributes["Name"])
     name = name[1:]
     ip_bridge_docker = str(attributes["NetworkSettings"]["Networks"]["bridge"]["IPAddress"])
+    for port in attributes["NetworkSettings"]["Ports"]:
+        port_in = port.split("/", 1)[0] # port exposed by container, i.e. cowrie: 2222
+        protocol = port.split("/", 1)[1] 
+        port_ex = attributes["NetworkSettings"]["Ports"][port][0]["HostPort"] # original port, i.e. cowrie: 22
+        container_port_list.append([port_ex, port_in, protocol])
     bridge_ovs.connect(name)
-    container_ip_list.append([name, ip_bridge_docker])
+    container_ip_list.append([name, container_port_list, ip_bridge_docker])
     print "   container connected: " + name
 print "##########"
 
@@ -56,7 +62,7 @@ rf.update_iptables_chain(chain_filter_docker, container_ip_list, ovs_bridge_name
 print "   updating table:FILTER chain:POSTROUTING..."
 rf.update_iptables_chain(chain_nat_postrouting, container_ip_list, ovs_bridge_name)
 print "   updating table:FILTER chain:DOCKER..."
-rf.update_iptables_chain(chain_nat_docker, container_ip_list, ovs_bridge_name)
+rf.update_iptables_chain_dnat(chain_nat_docker, container_ip_list, ovs_bridge_name)
 print "##########"
 
 print "disconnecting docker container from docker0..."
