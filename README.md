@@ -9,6 +9,8 @@
 
 
 ```
+cd ..
+git clone https://github.com/MBlahetek/sdn-tpot.git
 modprobe openvswitch
 apt-get install docker-compose
 cd sdn-tpot/main/
