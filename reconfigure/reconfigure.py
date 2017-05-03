@@ -60,7 +60,7 @@ rf.update_iptables_chain(chain_filter_forward, container_ip_list, ovs_bridge_nam
 print "   updating table:FILTER chain:DOCKER..."
 rf.update_iptables_chain(chain_filter_docker, container_ip_list, ovs_bridge_name)
 print "   updating table:FILTER chain:POSTROUTING..."
-chain_nat_postrouting.delete_rule(rules[0]) # delete the additional rule created by the docker ovs plugin
+chain_nat_postrouting.delete_rule(chain_nat_postrouting.rules[0]) # delete the additional rule created by the docker ovs plugin
 rf.update_iptables_chain(chain_nat_postrouting, container_ip_list, ovs_bridge_name)
 print "   updating table:FILTER chain:DOCKER..."
 rf.update_iptables_chain_dnat(chain_nat_docker, container_ip_list, ovs_bridge_name)
