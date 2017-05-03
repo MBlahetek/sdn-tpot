@@ -104,11 +104,8 @@ def update_iptables_chain_dnat(chain, ip_map, ovs_bridge_name):
             protocol = i[2]
             new_rule = iptc.Rule()
             new_rule.in_interface = "!" + ovs_bridge_name
-            print container_name
-            print len(container_name)
             if container_name == "elk":
-                print "in der if schleife"
-                new_rule.dst == "127.0.0.1/255.255.255.255"
+                new_rule.dst = "127.0.0.1/255.255.255.255"
             new_rule.protocol = protocol
             match = new_rule.create_match(protocol)
             match.dport = port_ex
