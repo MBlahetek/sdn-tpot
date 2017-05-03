@@ -23,6 +23,8 @@ pip install docker
 ### Installing
 
 ```
+docker network create -d ovs sdnnet
+docker run -d -v /data:/home/hostdata -p 6653:6653 -p 9090:9090 --name=floodlight --net=bridge bladdl/floodlight
 /bin/bash ./setup_sdn_tpot
 ```
 
