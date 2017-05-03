@@ -18,6 +18,7 @@ if ovs_bridge_name is None:
     raise NameError("no ovs bridge found")
 
 container_ip_list = []
+floodlight_ip = ""
 
 #Connect all docker0 containers to the ovs bridge
 print "connecting docker container to ovs-bridge: " + ovs_bridge_name + "..."
@@ -44,6 +45,8 @@ for i in container_ip_list:
     container = client.containers.get(name)
     ip_bridge_ovs = str(container.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"])
     i = i.append(ip_bridge_ovs)
+    if name == "floodlight":
+        floodlight_ip = ip_bridge_ovs
     print "   container: " + name + " | docker0 IP: " + ip + " | " + ovs_bridge_name + " IP: " + ip_bridge_ovs
 print "##########"
 
@@ -71,5 +74,12 @@ for i in container_ip_list:
     name = i[0]
     bridge_docker.disconnect(name)
     print "   container disconnected: " + name
+print "##########"
+
+print "configure Floodlight as SDN-Controller of the ovs..."
+ovs = client.containers.get("main_ovs_1")
+cmd_str = "ovs-vsctl set-controller " + ovs_bridge_name + " tcp:" + floodlight_ip +":6653"
+ovs.exec_run(cmd_str)
+print "SDN-Controller set"
 print "##########"
 print ">>> reconfiguration complete! <<<"
