@@ -4,3 +4,6 @@ modprobe openvswitch
 apt-get install -y docker-compose
 docker-compose up -d
 pip install --upgrade python-iptables
+docker network create -d ovs sdnnet
+docker run -d -v /data:/home/hostdata -p 6653:6653 -p 9090:9090 --name=floodlight --net=bridge bladdl/floodlight
+python ../reconfigure/reconfigure.py
