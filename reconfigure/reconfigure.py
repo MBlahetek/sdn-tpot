@@ -18,7 +18,6 @@ if ovs_bridge_name is None:
     raise NameError("no ovs bridge found")
 
 container_ip_list = []
-container_port_list = []
 
 #Connect all docker0 containers to the ovs bridge
 print "connecting docker container to ovs-bridge: " + ovs_bridge_name + "..."
@@ -27,6 +26,7 @@ for i in bridge_docker_container:
     name = str(attributes["Name"])
     name = name[1:]
     ip_bridge_docker = str(attributes["NetworkSettings"]["Networks"]["bridge"]["IPAddress"])
+    container_port_list = []
     for port in attributes["NetworkSettings"]["Ports"]:
         port_in = port.split("/", 1)[0] # port exposed by container, i.e. cowrie: 2222
         protocol = port.split("/", 1)[1] 
