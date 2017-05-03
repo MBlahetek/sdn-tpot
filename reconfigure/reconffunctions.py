@@ -89,7 +89,7 @@ def update_iptables_chain_dnat(chain, ip_map, ovs_bridge_name):
     
     new_rule = iptc.Rule()
     new_rule.in_interface = ovs_bridge_name
-    new_rule.target = iptc.Target(rule, "RETURN")
+    new_rule.target = iptc.Target(new_nerule, "RETURN")
     new_rules.append(new_rule)
     print "      created rule " + str(counter) + " of " + str(number)
     counter += 1
