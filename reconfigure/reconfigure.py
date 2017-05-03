@@ -40,7 +40,7 @@ print "##########"
 print "generating ip mapping..."    
 for i in container_ip_list:
     name = i[0]
-    ip = i[1]
+    ip = i[2]
     container = client.containers.get(name)
     ip_bridge_ovs = str(container.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"])
     i = i.append(ip_bridge_ovs)
