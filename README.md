@@ -12,9 +12,9 @@
 modprobe openvswitch
 pip install --upgrade python-iptables
 pip install docker
-cp crontab /etc/crontab
 apt-get install docker-compose
 cd sdn-tpot/main/
+cp crontab /etc/crontab
 docker-compose up -d
 ```
 
