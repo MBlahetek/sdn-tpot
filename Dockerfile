@@ -1,9 +1,9 @@
-FROM ubuntu:latest
+FROM ubuntu:14:04
 MAINTAINER Matthias Blahetek "matthias.blahetek@unibw.de"
 RUN mkdir /floodlight
 WORKDIR /floodlight
 RUN apt-get -y update && \
-    apt-get -y install build-essential openjdk-8-jdk ant maven python-dev eclipse git && \
+    apt-get -y install build-essential openjdk-7-jdk ant maven python-dev eclipse git && \
     git clone -b v1.2 git://github.com/floodlight/floodlight.git /floodlight && \
     git submodule init && \
     git submodule update && \
