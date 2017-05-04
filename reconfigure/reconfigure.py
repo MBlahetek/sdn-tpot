@@ -80,8 +80,8 @@ print "configure Floodlight as SDN-Controller of the ovs..."
 ovs = client.containers.get("main_ovs_1")
 cmd_str = "ovs-vsctl set-controller " + ovs_bridge_name + " tcp:" + floodlight_ip +":6653"
 ovs.exec_run(cmd_str)
-print "configure OpenFlow Versions 1.0, 1.1, 1.2 and 1.3 in ovs..."
-cmd_str = "ovs-vsctl set bridge " + ovs_bridge_name + " protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13"
-ovs.exec_run(cmd_str)
+# print "configure OpenFlow Versions 1.0, 1.1, 1.2 and 1.3 in ovs..."
+# cmd_str = "ovs-vsctl set bridge " + ovs_bridge_name + " protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13"
+# ovs.exec_run(cmd_str)
 print "##########"
 print ">>> reconfiguration complete! <<<"
