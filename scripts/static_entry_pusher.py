@@ -35,25 +35,49 @@ class StaticEntryPusher(object):
  
 pusher = StaticEntryPusher('172.18.0.5')
  
-flow1 = {
+cowrie_ssh = {
     'switch':"00:00:42:41:c8:da:11:40",
-    "name":"flow_mod_1",
+    "name":"cowrie_ssh",
     "cookie":"0",
     "priority":"32768",
-    "in_port":"1",
+    "in_port":"local",
+    "eth_type":"0x0800",
+    "ip_proto":"0x06",
+    "ipv4_src":"0.0.0.0/0",
+    "ipv4_dst":"172.18.0.4/32",
+    "tcp_dst":"2222",
     "active":"true",
-    "actions":"output=flood"
+    "actions":"output=3"
     }
  
-flow2 = {
+cowrie_telnet = {
     'switch':"00:00:42:41:c8:da:11:40",
-    "name":"flow_mod_2",
+    "name":"cowrie_ssh",
     "cookie":"0",
     "priority":"32768",
-    "in_port":"2",
+    "in_port":"local",
+    "eth_type":"0x0800",
+    "ip_proto":"0x06",
+    "ipv4_src":"0.0.0.0/0",
+    "ipv4_dst":"172.18.0.4/32",
+    "tcp_dst":"2223",
     "active":"true",
-    "actions":"output=flood"
+    "actions":"output=3"
+    }
+
+cowrie_drop = {
+    'switch':"00:00:42:41:c8:da:11:40",
+    "name":"cowrie_drop",
+    "cookie":"0",
+    "priority":"32768",
+    "in_port":"local",
+    "eth_type":"0x0800",
+    "ipv4_src":"0.0.0.0/0",
+    "ipv4_dst":"172.18.0.4/32",
+    "active":"true",
+    "actions":""
     }
  
-pusher.set(flow1)
-pusher.set(flow2)
+pusher.set(cowrie_ssh)
+pusher.set(cowrie_telnet)
+pusher.set(cowrie_drop)
