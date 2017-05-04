@@ -50,6 +50,15 @@ for i in container_ip_list:
     print "   container: " + name + " | docker0 IP: " + ip + " | " + ovs_bridge_name + " IP: " + ip_bridge_ovs
 print "##########"
 
+print "configure Floodlight as SDN-Controller of the ovs..."
+ovs = client.containers.get("main_ovs_1")
+cmd_str = "ovs-vsctl set-controller " + ovs_bridge_name + " tcp:" + floodlight_ip + ":6653"
+ovs.exec_run(cmd_str)
+# print "configure OpenFlow Versions 1.0, 1.1, 1.2 and 1.3 in ovs..."
+# cmd_str = "ovs-vsctl set bridge " + ovs_bridge_name + " protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13"
+# ovs.exec_run(cmd_str)
+print "##########"
+
 table_filter = iptc.Table(iptc.Table.FILTER)
 table_nat = iptc.Table(iptc.Table.NAT)
 chain_filter_forward = iptc.Chain(table_filter, "FORWARD")
@@ -76,12 +85,4 @@ for i in container_ip_list:
     print "   container disconnected: " + name
 print "##########"
 
-print "configure Floodlight as SDN-Controller of the ovs..."
-ovs = client.containers.get("main_ovs_1")
-cmd_str = "ovs-vsctl set-controller " + ovs_bridge_name + " tcp:" + floodlight_ip +":6653"
-ovs.exec_run(cmd_str)
-# print "configure OpenFlow Versions 1.0, 1.1, 1.2 and 1.3 in ovs..."
-# cmd_str = "ovs-vsctl set bridge " + ovs_bridge_name + " protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13"
-# ovs.exec_run(cmd_str)
-print "##########"
 print ">>> reconfiguration complete! <<<"
