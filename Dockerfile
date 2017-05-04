@@ -1,4 +1,4 @@
-FROM ubuntu:14:04
+FROM ubuntu:14.04
 MAINTAINER Matthias Blahetek "matthias.blahetek@unibw.de"
 RUN mkdir /floodlight
 WORKDIR /floodlight
