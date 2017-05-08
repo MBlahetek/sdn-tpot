@@ -11,7 +11,7 @@ class RestApiGetter(object):
         return json.loads(ret[2])    
 
     def get_switch(self):
-        path = "/wm/device"
+        path = "/wm/device/"
         ret = self.rest_call(path, 'GET')
         json_object = json.loads(ret[2])
         for entity in json_object["devices"]:
