@@ -55,6 +55,7 @@ class SimpleDosMitigation(object):
         old_stats = []
         old_package_increase = []
         
+        print "getting first package counts..."
         json_flows = self.get_flows()
         for flow in json_flows:
             if int(flow["priority"]) > 1000:
@@ -63,6 +64,7 @@ class SimpleDosMitigation(object):
         
         time.sleep(polling)
         
+        print "calculating first increasement values..."
         json_flows = self.get_flows()
         for flow in json_flows:
             if int(flow["priority"]) > 1000:
@@ -83,6 +85,7 @@ class SimpleDosMitigation(object):
         time.sleep(polling)
         
         while 1:
+            print "monitoring flows for suspicious packet increasement..."
             json_flows = self.get_flows()
             for flow in json_flows:
                 if int(flow["priority"]) >= 1000 and int(flow["priority"]) <= 32700:
