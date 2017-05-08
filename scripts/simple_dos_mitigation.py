@@ -1,3 +1,8 @@
+'''
+Created on 28.04.2017
+
+@author: Matthias Blahetek
+'''
 from threading import Thread
 import rest_api_getter
 import static_entry_pusher
