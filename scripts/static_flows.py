@@ -1,4 +1,4 @@
-import static_entry_pusher as pusher
+import static_entry_pusher
 import rest_api_getter
 import docker
 
@@ -151,7 +151,7 @@ flows.append(cowrie_drop)
 
 # send the pro-activ flow rules to the controller
 
-push = pusher.StaticEntryPusher(floodlight_ip)
+push = static_entry_pusher.StaticEntryPusher(floodlight_ip)
 
 for flow in flows:
     push.set(flow)
