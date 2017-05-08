@@ -12,10 +12,6 @@ import time
 import docker
 from pickle import FALSE
 
-"""
-TODO take care of flow mapping
-"""
-
 class SimpleDosMitigation(object):
     
     def __init__(self, controller, switch, polling, threshold, margin):
