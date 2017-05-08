@@ -18,14 +18,17 @@ cowrie_ip = cowrie.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
 bridge_ovs = client.networks.list('sdnnet')[0]
 k = 2
 for i in bridge_ovs.containers:
-    cmd_str = "ping -c 4 172.18.0." + str(k)
+    cmd_str = "ping -c 3 172.18.0." + str(k)
+    print cmd_str + "..."
     cowrie.exec_run(cmd_str)
     k += 1
     
 # get ip - switch port - mapping for dynamic pro-activ flow generation
 
+print "get switch ports for each container..."
 rest_api = rest_api_getter.RestApiGetter(floodlight_ip)
 ip_port_map = rest_api.get_ip_port_mapping()
+print "get switch id..."
 switch = rest_api.get_switch()
 
 for i in ip_port_map:
@@ -37,7 +40,7 @@ for i in ip_port_map:
         floodlight_port = i[1]
 
 # write all the pro-active flow rules
-
+print "loading pro-active flow rules..."
 flows = []
 
 floodlight_rest = {
