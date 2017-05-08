@@ -108,7 +108,7 @@ class SimpleDosMitigation(object):
 
 client = docker.from_env()
 floodlight = client.containers.get("floodlight")
-controller_id = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
+controller_ip = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
 
 polling = 60
 threshold = 3
