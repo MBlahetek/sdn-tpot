@@ -51,7 +51,6 @@ class SimpleDosMitigation(object):
         
     def cycle(self):        
         old_stats = []
-        old_package_increase = []
         
         print "getting first package counts..."
         json_flows = self.get_flows()
@@ -60,7 +59,7 @@ class SimpleDosMitigation(object):
                 package_count = int(flow["packet_count"])
                 old_stats.append([flow["match"], flow["priority"], package_count, 0])
         
-        time.sleep(polling)
+        time.sleep(self.polling)
         
         print "calculating first increasement values..."
         json_flows = self.get_flows()
@@ -80,13 +79,13 @@ class SimpleDosMitigation(object):
                 if new_flow:
                     old_stats.append([flow["match"], flow["priority"], package_count, 0])
                   
-        time.sleep(polling)
+        time.sleep(self.polling)
         
         while 1:
             print "monitoring flows for suspicious packet increasement..."
             json_flows = self.get_flows()
             for flow in json_flows:
-                if int(flow["priority"]) >= 1000 and int(flow["priority"]) <= 32700:
+                if int(flow["priority"]) > 1000 and int(flow["priority"]) <= 32700:
                     new_flow = False
                     package_count = int(flow["packet_count"])
                     k = 0
@@ -106,7 +105,7 @@ class SimpleDosMitigation(object):
                         k += 1
                     if new_flow:
                         old_stats.append([flow["match"], flow["priority"], package_count, 0])
-            time.sleep(polling)
+            time.sleep(self.polling)
 
 
 client = docker.from_env()
