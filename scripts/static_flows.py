@@ -43,11 +43,25 @@ for i in ip_port_map:
 print "loading pro-active flow rules..."
 flows = []
 
+ovs_bridge = {
+    'switch': switch,
+    "name":"ovs_bridge",
+    "cookie":"0",
+    "priority":"11000",
+    "in_port":"local",
+    "eth_type":"0x0800",
+    "ipv4_src":"172.18.0.0/16",
+    "ipv4_dst": "172.18.0.0/16",
+    "active":"true",
+    "actions":"output=flood"
+    }
+flows.append(ovs_bridge)
+
 floodlight_rest = {
     'switch': switch,
     "name":"floodlight_rest",
     "cookie":"0",
-    "priority":"30000",
+    "priority":"15000",
     "in_port":"local",
     "eth_type":"0x0800",
     "ip_proto":"0x06",
@@ -77,7 +91,7 @@ glastopf_http = {
     'switch': switch,
     "name":"glastopf_http",
     "cookie":"0",
-    "priority":"30000",
+    "priority":"15000",
     "in_port":"local",
     "eth_type":"0x0800",
     "ip_proto":"0x06",
@@ -107,7 +121,7 @@ cowrie_ssh = {
     'switch': switch,
     "name":"cowrie_ssh",
     "cookie":"0",
-    "priority":"30000",
+    "priority":"15000",
     "in_port":"local",
     "eth_type":"0x0800",
     "ip_proto":"0x06",
@@ -123,7 +137,7 @@ cowrie_telnet = {
     'switch': switch,
     "name":"cowrie_telnet",
     "cookie":"0",
-    "priority":"30000",
+    "priority":"15000",
     "in_port":"local",
     "eth_type":"0x0800",
     "ip_proto":"0x06",
