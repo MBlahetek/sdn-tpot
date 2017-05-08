@@ -37,6 +37,5 @@ class RestApiGetter(object):
         conn.request(action, path)
         response = conn.getresponse()
         ret = (response.status, response.reason, response.read())
-        print ret
         conn.close()
         return ret
