@@ -1,12 +1,14 @@
 from threading import Thread
+import rest_api_getter
+import static_entry_pusher
 import os
 import json
 import time
+import docker
+from pickle import FALSE
 
 """
-TODO take car of flow mapping
-TODO rework new_temp_flow
-TODO make use of static_entry_pusher
+TODO take care of flow mapping
 """
 
 class SimpleDosMitigation(object):
@@ -17,59 +19,100 @@ class SimpleDosMitigation(object):
         self.polling = polling
         self.threshold = threshold
         self.margin = margin
-        self.get_flow_cmd = "curl http://" + self.controller + "/wm/core/switch/" + self.switch + "/flow/json"
+        self.rest_api = rest_api_getter.RestApiGetter(self.controller)
+        self.flow_stats_path = "/wm/core/switch/" + self.switch + "/flow/json"
         
     def get_flows(self):
-        json_file = os.popen(self.get_flow_cmd).read()
-        json_object = json.loads(json_file)
+        json_object = self.rest_api.get(self.flow_stats_path)
         json_flows = json_object["flows"]
         return json_flows
+    
+    def mitigation(self, flow):
+        json_match = flow["match"]
+        if "ip4_src" in json_match:
+            ip_src = json_match["ipv4_src"]
+        if "ipv4_dst" in json_match:
+            ip_dest = json_match["ipv4_dst"]
+        temp_flow_name = "DoS_Mitigation_" + str(k)
+        new_temp_flow = {
+            'switch': self.switch,
+            "name": temp_flow_name,
+            "cookie":"0",
+            "priority":"32768",
+            "in_port":"local",
+            "eth_type":"0x0800",
+            "ipv4_src": ip_src,
+            "ipv4_dst": ip_dest,
+            "active":"true",
+            "hard_timeout":"300",
+            "actions":""
+        }
+        push = static_entry_pusher.StaticEntryPusher(self.controller)
+        push.set(new_temp_flow)
+        print "flow entry set: " + temp_flow_name
         
-    def cycle(self):
+    def cycle(self):        
         old_stats = []
         old_package_increase = []
         
-        json_flows = get_flows()
-        for i in range(len(json_flows)):
-            package_count = int(json_flows[i]["packetCount"])
-            old_stats.append(package_count)
+        json_flows = self.get_flows()
+        for flow in json_flows:
+            if int(flow["priority"]) > 1000:
+                package_count = int(flow["packet_count"])
+                old_stats.append((flow["match"], flow["priority"], package_count, 0))
         
         time.sleep(polling)
         
-        json_flows = get_flows()
-        for i in range(len(json_flows)):
-            package_count = int(json_flows[i]["packetCount"])
-            package_increase = package_count - old_stats[i]
-            old_package_increase.append(package_increase)
-            old_stats[i] = package_count
-        
+        json_flows = self.get_flows()
+        for flow in json_flows:
+            if int(flow["priority"]) > 1000:
+                new_flow = False
+                package_count = int(flow["packet_count"])
+                for i in old_stats:
+                    if flow["match"] == i[0] and flow["priority"] == i[1]:
+                        package_increase = package_count - i[2]
+                        i[2] = package_count
+                        i[3] = package_increase
+                        new_flow = False
+                        break
+                    else:
+                        new_flow = True
+                if new_flow:
+                    old_stats.append((flow["match"], flow["priority"], package_count, 0))
+                  
         time.sleep(polling)
         
         while 1:
-            json_flows = get_flows()
-            k = 0
-        
-            for i in range(len(json_flows)):
-                if json_flows[i]["priority"] == "500":
-                    old_count = old_stats[k]
-                    package_count = int(json_flows[i]["packetCount"])
-                    new_package_increase = package_count - old_count
-                        
-                    if ((old_package_increase[k] * threshold) < new_package_increase) and (new_package_increase[k] > margin):
-                                        
-                        json_match = json_flows[i]["match"]
-                        ip_src = json_match["ipv4_src"]
-                        ip_dest = json_match["ipv4_dst"]
-                        temp_flow_name = "DoS_Mitigation_" + str(k)
-                
-                        new_temp_flow = "curl -d '{\"switch\": \"" + switch_id + "\", \"name\":\"" + temp_flow_name + "\", \"eth_type\":\"0x0800\", \"priority\":\"2000\", \"ipv4_src\":\"" + ip_src + "\", \"ipv4_dst\":\"" + ip_dest + "\", \"active\":\"true\",  \"actions\":\"\", \"hard_timeout\":\"300\"}' http://" + controller_id + "/wm/staticflowpusher/json"
- 
-                        push_new_flow = os.popen(new_temp_flow)
-                        print(push_new_flow)
-            
-                    old_package_increase[k] = new_package_increase    
-                    old_stats[k] = package_count
-            
-                    k = k + 1
-                
+            json_flows = self.get_flows()
+            for flow in json_flows:
+                if int(flow["priority"]) >= 1000 and int(flow["priority"]) <= 32700:
+                    new_flow = False
+                    package_count = int(flow["packet_count"])
+                    for i in old_stats:                    
+                        if flow["match"] == i[0] and flow["priority"] == i[1]:
+                            old_count = i[2]
+                            old_package_increase = i[3]
+                            new_package_increase = package_count - old_count
+                            if ((old_package_increase * threshold) < new_package_increase) and (new_package_increase > margin):
+                                self.mitigation(flow)
+                            i[2] = package_count
+                            i[3] = new_package_increase
+                            new_flow = False
+                            break
+                        else:
+                            new_flow = True
+                    if new_flow:
+                        old_stats.append((flow["match"], flow["priority"], package_count, 0))
             time.sleep(polling)
+
+
+client = docker.from_env()
+floodlight = client.containers.get("floodlight")
+controller_id = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
+
+polling = 60
+threshold = 3
+margin = 100       
+
+DosMitigation = SimpleDosMitigation(controller_ip, switch_id, polling, threshold, margin)
+DosMitigation.cycle()
