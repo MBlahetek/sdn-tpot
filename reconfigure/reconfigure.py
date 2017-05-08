@@ -54,9 +54,6 @@ print "configure Floodlight as SDN-Controller of the ovs..."
 ovs = client.containers.get("main_ovs_1")
 cmd_str = "ovs-vsctl set-controller " + ovs_bridge_name + " tcp:" + floodlight_ip + ":6653"
 ovs.exec_run(cmd_str)
-# print "configure OpenFlow Versions 1.0, 1.1, 1.2 and 1.3 in ovs..."
-# cmd_str = "ovs-vsctl set bridge " + ovs_bridge_name + " protocols=OpenFlow10,OpenFlow11,OpenFlow12,OpenFlow13"
-# ovs.exec_run(cmd_str)
 print "##########"
 
 table_filter = iptc.Table(iptc.Table.FILTER)
@@ -72,7 +69,7 @@ rf.update_iptables_chain(chain_filter_forward, container_ip_list, ovs_bridge_nam
 print "   updating table:FILTER chain:DOCKER..."
 rf.update_iptables_chain(chain_filter_docker, container_ip_list, ovs_bridge_name)
 print "   updating table:FILTER chain:POSTROUTING..."
-chain_nat_postrouting.delete_rule(chain_nat_postrouting.rules[0]) # delete the additional rule created by the docker ovs plugin
+chain_nat_postrouting.delete_rule(chain_nat_postrouting.rules[0]) # deletes the additional rule created by the docker ovs plugin
 rf.update_iptables_chain(chain_nat_postrouting, container_ip_list, ovs_bridge_name)
 print "   updating table:FILTER chain:DOCKER..."
 rf.update_iptables_chain_dnat(chain_nat_docker, container_ip_list, ovs_bridge_name)
