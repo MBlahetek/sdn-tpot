@@ -29,6 +29,5 @@ class StaticEntryPusher(object):
         conn.request(action, path, body, headers)
         response = conn.getresponse()
         ret = (response.status, response.reason, response.read())
-        print ret
         conn.close()
         return ret
