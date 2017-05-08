@@ -1,2 +1,4 @@
 #!/bin/bash
 python ../reconfigure/reconfigure.py
+python ../scripts/static_flows.py
+nohup python ../scripts/simple_dos_mitigation.py &
