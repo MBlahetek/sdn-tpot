@@ -27,13 +27,13 @@ class SimpleDosMitigation(object):
         json_flows = json_object["flows"]
         return json_flows
     
-    def mitigation(self, flow):
+    def mitigation(self, flow, index):
         json_match = flow["match"]
         if "ip4_src" in json_match:
             ip_src = json_match["ipv4_src"]
         if "ipv4_dst" in json_match:
             ip_dest = json_match["ipv4_dst"]
-        temp_flow_name = "DoS_Mitigation_" + str(k)
+        temp_flow_name = "DoS_Mitigation_" + str(index)
         new_temp_flow = {
             'switch': self.switch,
             "name": temp_flow_name,
@@ -91,19 +91,21 @@ class SimpleDosMitigation(object):
                 if int(flow["priority"]) >= 1000 and int(flow["priority"]) <= 32700:
                     new_flow = False
                     package_count = int(flow["packet_count"])
+                    k = 0
                     for i in old_stats:                    
                         if flow["match"] == i[0] and flow["priority"] == i[1]:
                             old_count = i[2]
                             old_package_increase = i[3]
                             new_package_increase = package_count - old_count
                             if ((old_package_increase * threshold) < new_package_increase) and (new_package_increase > margin):
-                                self.mitigation(flow)
+                                self.mitigation(flow, k)
                             i[2] = package_count
                             i[3] = new_package_increase
                             new_flow = False
                             break
                         else:
                             new_flow = True
+                        k += 1
                     if new_flow:
                         old_stats.append([flow["match"], flow["priority"], package_count, 0])
             time.sleep(polling)
@@ -115,9 +117,9 @@ controller_ip = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAdd
 rest_api = rest_api_getter.RestApiGetter(controller_ip)
 switch_id = rest_api.get_switch()
 
-polling = 60
-threshold = 3
-margin = 100       
+polling = 30
+threshold = 5
+margin = 1000      
 
 DosMitigation = SimpleDosMitigation(controller_ip, switch_id, polling, threshold, margin)
 DosMitigation.cycle()
