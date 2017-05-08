@@ -60,7 +60,7 @@ class SimpleDosMitigation(object):
         for flow in json_flows:
             if int(flow["priority"]) > 1000:
                 package_count = int(flow["packet_count"])
-                old_stats.append((flow["match"], flow["priority"], package_count, 0))
+                old_stats.append([flow["match"], flow["priority"], package_count, 0])
         
         time.sleep(polling)
         
@@ -80,7 +80,7 @@ class SimpleDosMitigation(object):
                     else:
                         new_flow = True
                 if new_flow:
-                    old_stats.append((flow["match"], flow["priority"], package_count, 0))
+                    old_stats.append([flow["match"], flow["priority"], package_count, 0])
                   
         time.sleep(polling)
         
@@ -105,7 +105,7 @@ class SimpleDosMitigation(object):
                         else:
                             new_flow = True
                     if new_flow:
-                        old_stats.append((flow["match"], flow["priority"], package_count, 0))
+                        old_stats.append([flow["match"], flow["priority"], package_count, 0])
             time.sleep(polling)
 
 
