@@ -40,7 +40,7 @@ class TpotMonitor(object):
         
         name = "suricata_" + PORTS[tcp_dst]
         client = docker.from_env()
-        container = client.containers.run('dtagdevsec/suricata', detach=True, name=name, networks=["sdnnet"])
+        container = client.containers.run('dtagdevsec/suricata:latest1610', detach=True, name=name, networks=["sdnnet"])
         container.exec_run("ping -c 3 172.18.0.1")
         container_ip = container.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
         ip_port_map = self.rest_api.get_ip_port_mapping()
