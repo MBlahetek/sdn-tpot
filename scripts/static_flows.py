@@ -66,7 +66,7 @@ floodlight_rest = {
     'switch': switch,
     "name":"floodlight_rest",
     "cookie":"0",
-    "priority":"15000",
+    "priority":"14000",
     "in_port":"local",
     "eth_type":"0x0800",
     "ip_proto":"0x06",
