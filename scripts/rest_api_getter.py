@@ -31,7 +31,7 @@ class RestApiGetter(object):
         json_object = json.loads(ret[2])
         map = []
         for entity in json_object["devices"]:
-            if entity["ipv4"] != []:
+            if entity["ipv4"] != [] and entity["attachmentPoint"] != []:
                 ip = entity["ipv4"][0]
                 port = entity["attachmentPoint"][0]["port"]
                 map.append((ip,port))
