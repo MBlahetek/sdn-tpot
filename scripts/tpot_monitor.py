@@ -42,10 +42,9 @@ class TpotMonitor(object):
         client = docker.from_env()
         container = client.containers.run('dtagdevsec/suricata:latest1610', detach=True, name=name, network_mode="sdnnet")
         suricata = client.containers.get(name)
-        print "ping -c 3 172.18.0.1"
+        time.sleep(5)
         suricata.exec_run("ping -c 3 172.18.0.1")
         suricata_ip = suricata.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
-        print "suricata ip: " + suricata_ip
         ip_port_map = self.rest_api.get_ip_port_mapping()
         for i in ip_port_map:
             if i[0] == suricata_ip:
@@ -71,7 +70,7 @@ class TpotMonitor(object):
         ids_flow_drop = "TODO"
         
         push = static_entry_pusher.StaticEntryPusher(self.controller)
-        push.set(new_temp_flow)
+        push.set(ids_flow)
         print "flow entry set: " + name
         
     def remove_ids(self, flow):
