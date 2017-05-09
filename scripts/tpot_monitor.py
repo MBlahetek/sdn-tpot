@@ -48,7 +48,7 @@ class TpotMonitor(object):
         print "suricata ip: " + suricata_ip
         ip_port_map = self.rest_api.get_ip_port_mapping()
         for i in ip_port_map:
-            if i[0] == container_ip:
+            if i[0] == suricata_ip:
                 container_switch_port = i[1]
                 break
         actions = actions + ",output=" + container_switch_port
