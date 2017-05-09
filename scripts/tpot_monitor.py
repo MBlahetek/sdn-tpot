@@ -40,9 +40,12 @@ class TpotMonitor(object):
         
         name = "suricata_" + PORTS[tcp_dst]
         client = docker.from_env()
-        container = client.containers.run('dtagdevsec/suricata:latest1610', detach=True, name=name, networks=["sdnnet"])
-        container.exec_run("ping -c 3 172.18.0.1")
-        container_ip = container.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
+        container = client.containers.run('dtagdevsec/suricata:latest1610', detach=True, name=name, network_mode="sdnnet")
+        suricata = client.containers.get(name)
+        print "ping -c 3 172.18.0.1"
+        suricata.exec_run("ping -c 3 172.18.0.1")
+        suricata_ip = suricata.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
+        print "suricata ip: " + suricata_ip
         ip_port_map = self.rest_api.get_ip_port_mapping()
         for i in ip_port_map:
             if i[0] == container_ip:
@@ -131,4 +134,4 @@ switch_id = rest_api.get_switch()
 polling = 15     
 
 monitor = TpotMonitor(controller_ip, switch_id, polling)
-DosMitigation.cycle()
+monitor.cycle()
