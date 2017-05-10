@@ -21,6 +21,7 @@ class TpotMonitor(object):
         self.controller = controller
         self.switch = switch
         self.polling = polling
+        self.ids_container = []
         self.rest_api = rest_api_getter.RestApiGetter(self.controller)
         self.flow_stats_path = "/wm/core/switch/" + self.switch + "/flow/json"
         
@@ -40,8 +41,14 @@ class TpotMonitor(object):
         
         name = "suricata_" + PORTS[tcp_dst]
         client = docker.from_env()
-        container = client.containers.run('dtagdevsec/suricata:latest1610', detach=True, name=name, network_mode="sdnnet")
-        suricata = client.containers.get(name)
+        container_list = client.containers.list()
+        if name in self.ids_container:
+            suricata = client.containers.get(name)
+            suricata.start()
+        else:
+            container = client.containers.run('dtagdevsec/suricata:latest1610', detach=True, name=name, network_mode="sdnnet")
+            suricata = client.containers.get(name)
+            self.ids_container.append(name)
         print "docker container started: " + name
         time.sleep(5)
         suricata.exec_run("ping -c 3 172.18.0.1")
@@ -81,8 +88,8 @@ class TpotMonitor(object):
         print "flow entry removed: " + name
         client = docker.from_env()
         suricata = client.containers.get(name)
-        suricata.remove(force=True)
-        print "docker container removec: " + name
+        suricata.stop(force=True)
+        print "docker container removed: " + name
         
     def cycle(self):
         old_stats = []
