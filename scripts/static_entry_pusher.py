@@ -14,7 +14,7 @@ class StaticEntryPusher(object):
         ret = self.rest_call(data, 'POST')
         return ret[0] == 200
  
-    def remove(self, objtype, data):
+    def remove(self, data):
         ret = self.rest_call(data, 'DELETE')
         return ret[0] == 200
  
