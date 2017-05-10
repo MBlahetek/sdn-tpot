@@ -89,6 +89,8 @@ class TpotMonitor(object):
                 old_stats.append([flow["match"], flow["priority"], package_count, 0])
                 
         time.sleep(self.polling)
+        
+        ids_active = []
                 
         while 1:
             print "monitoring flows for packet increasement..."
@@ -104,8 +106,9 @@ class TpotMonitor(object):
                             old_package_increase = i[3]
                             new_package_increase = package_count - old_count
                             # inital traffic causes start of a specific ids
-                            if new_package_increase > 0 and int(flow["priority"]) == 15000:
+                            if new_package_increase > 0 and int(flow["priority"]) == 15000 and flow["match"] not in ids_active:
                                 self.add_ids(flow)
+                                ids_active.append(flow["match"])
                             # if there's no traffic over the last k polling intervalls, the ids + flow will be removed
                             if new_package_increase == 0 and int(flow["priority"]) == 15100:
                                 if len(i) == 4:
@@ -116,6 +119,7 @@ class TpotMonitor(object):
                                     if i[4] == 3:
                                         self.remove_ids(flow)
                                         del i[4]
+                                        ids_active.remove(flow["match"])
                                         
                             i[2] = package_count
                             i[3] = new_package_increase
