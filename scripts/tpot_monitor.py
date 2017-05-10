@@ -67,14 +67,17 @@ class TpotMonitor(object):
             "actions": actions
             }
         
-        ids_flow_drop = "TODO"
-        
         push = static_entry_pusher.StaticEntryPusher(self.controller)
         push.set(ids_flow)
         print "flow entry set: " + name
         
     def remove_ids(self, flow):
-        raise NotImplementedError("TODO")
+        tcp_dst = flow["match"]["tcp_dst"]
+        name = "suricata_" + PORTS[tcp_dst]
+        ids_flow = {"name": name}
+        push = static_entry_pusher.StaticEntryPusher(self.controller)
+        push.remove(ids_flow)
+        print "flow entry removed: " + name
         
     def cycle(self):
         old_stats = []
