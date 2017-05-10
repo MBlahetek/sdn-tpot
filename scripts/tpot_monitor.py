@@ -88,8 +88,8 @@ class TpotMonitor(object):
         print "flow entry removed: " + name
         client = docker.from_env()
         suricata = client.containers.get(name)
-        suricata.stop(force=True)
-        print "docker container removed: " + name
+        suricata.stop()
+        print "docker container stopped: " + name
         
     def cycle(self):
         old_stats = []
