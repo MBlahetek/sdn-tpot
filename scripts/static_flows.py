@@ -6,6 +6,7 @@ Created on 28.04.2017
 import static_entry_pusher
 import rest_api_getter
 import docker
+import time
 
 client = docker.from_env()
 floodlight = client.containers.get("floodlight")
@@ -28,8 +29,11 @@ for i in bridge_ovs.containers:
     cowrie.exec_run(cmd_str)
     k += 1
     
-# get ip - switch port - mapping for dynamic pro-activ flow generation
+#give floodlight few seconds to update its database
+#otherwise the swith port mapping in the next step probably fails.
+time.sleep(3)
 
+# get ip - switch port - mapping for dynamic pro-activ flow generation
 print "get switch ports for each container..."
 rest_api = rest_api_getter.RestApiGetter(floodlight_ip)
 ip_port_map = rest_api.get_ip_port_mapping()
