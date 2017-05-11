@@ -69,7 +69,7 @@ class TpotMonitor(object):
             if i[0] == suricata_ip:
                 container_switch_port = i[1]
                 break
-        actions = [actions, "output=" + container_switch_port]
+        actions = actions + ",output=" + container_switch_port
         
         ids_flow = {
             'switch': self.switch,
