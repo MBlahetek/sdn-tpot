@@ -42,10 +42,10 @@ class TpotMonitor(object):
         
         name = "suricata_" + PORTS[tcp_dst]
         client = docker.from_env()
-        container_list = client.containers.list()
         if name in self.ids_container:
             suricata = client.containers.get(name)
             suricata.start()
+            suricata = client.containers.get(name)
         else:
             log_path = '/data/' + name + "/"
             if not os.path.exists(log_path):
@@ -60,7 +60,6 @@ class TpotMonitor(object):
             self.ids_container.append(name)
         print "docker container started: " + name
         suricata.exec_run("ping -c 3 172.18.0.1")
-        time.sleep(5)
         suricata_ip = suricata.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
         ip_port_map = self.rest_api.get_ip_port_mapping()
         for i in ip_port_map:
