@@ -55,8 +55,10 @@ class TpotMonitor(object):
                                             name=name,
                                             cap_add=["NET_ADMIN"],
                                             network_mode="sdnnet",
+                                            privileged=True,
                                             volumes={ log_path : {'bind':'/data/suricata' , 'mode': 'rw'}})
             suricata = client.containers.get(name)
+            suricata.exec_run("ifconfig eth0 promisc")
             self.ids_container.append(name)
         print "docker container started: " + name
         time.sleep(3)
