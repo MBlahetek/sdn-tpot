@@ -59,7 +59,7 @@ class TpotMonitor(object):
             suricata = client.containers.get(name)
             self.ids_container.append(name)
         print "docker container started: " + name
-        time.sleep(5)
+        time.sleep(10)
         suricata.exec_run("ping -c 3 172.18.0.1")
         suricata_ip = suricata.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
         ip_port_map = self.rest_api.get_ip_port_mapping()
@@ -137,7 +137,7 @@ class TpotMonitor(object):
                                     i.append(k)
                                 else:
                                     i[4] += 1
-                                    if i[4] == 3:
+                                    if i[4] == 15:
                                         self.remove_ids(flow)
                                         del i[4]
                                         ids_active.remove(flow["match"])
@@ -158,7 +158,7 @@ controller_ip = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAdd
 rest_api = rest_api_getter.RestApiGetter(controller_ip)
 switch_id = rest_api.get_switch()
 
-polling = 15     
+polling = 5     
 
 monitor = TpotMonitor(controller_ip, switch_id, polling)
 monitor.cycle()
