@@ -59,6 +59,8 @@ class TpotMonitor(object):
                                             volumes={ log_path : {'bind':'/data/suricata' , 'mode': 'rw'}})
             suricata = client.containers.get(name)
             suricata.exec_run("ifconfig eth0 promisc")
+            suricata.exec_run("mkdir /data/suricata/log")
+            suricata.exec_run(cmd="/usr/bin/suricata -c /etc/suricata/suricata.yaml -S \"/etc/suricata/rules/*.rules\" -i eth0", detach=True)
             self.ids_container.append(name)
         print "docker container started: " + name
         time.sleep(3)
