@@ -8,6 +8,7 @@ import static_entry_pusher
 import json
 import docker
 import time
+import os
 
 PORTS = {
     "2222":"ssh",
@@ -46,7 +47,15 @@ class TpotMonitor(object):
             suricata = client.containers.get(name)
             suricata.start()
         else:
-            container = client.containers.run('dtagdevsec/suricata:latest1610', detach=True, name=name, network_mode="sdnnet")
+            log_path = '/data/' + name + "/"
+            if not os.path.exists(log_path):
+                os.makedirs(log_path)
+            container = client.containers.run('dtagdevsec/suricata:latest1610', 
+                                            detach=True,
+                                            name=name,
+                                            cap_add=["NET_ADMIN"],
+                                            network_mode="sdnnet",
+                                            volumes={ log_path : {'bind': log_path , 'mode': 'rw'}})
             suricata = client.containers.get(name)
             self.ids_container.append(name)
         print "docker container started: " + name
