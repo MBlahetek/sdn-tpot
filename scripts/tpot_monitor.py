@@ -58,11 +58,11 @@ class TpotMonitor(object):
                                             privileged=True,
                                             volumes={ log_path : {'bind':'/data/suricata' , 'mode': 'rw'}})
             suricata = client.containers.get(name)
-            suricata.exec_run("ifconfig eth0 promisc")
             suricata.exec_run("mkdir /data/suricata/log")
-            suricata.exec_run(cmd="/usr/bin/suricata -c /etc/suricata/suricata.yaml -S \"/etc/suricata/rules/*.rules\" -i eth0", detach=True)
             self.ids_container.append(name)
         print "docker container started: " + name
+        suricata.exec_run("ifconfig eth0 promisc")
+        suricata.exec_run(cmd="/usr/bin/suricata -c /etc/suricata/suricata.yaml -S \"/etc/suricata/rules/*.rules\" -i eth0", detach=True)
         time.sleep(3)
         suricata.exec_run("ping -c 3 172.18.0.1")
         suricata_ip = suricata.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
