@@ -24,9 +24,12 @@ pip install docker
 ```
 docker network create -d ovs sdnnet
 docker run -d -p 6653:6653 -p 9090:9090 --name=floodlight --net=bridge mblahetek/floodlight
+service elk stop
+cp crontab /etc/
+python ../reconfigure/reconfigure.py
+service elk start
 service ui-for-docker start
 service netdata start
-python ../reconfigure/reconfigure.py
 python ../scripts/static_flows.py
 nohup python ../scripts/simple_dos_mitigation.py &
 python ../scripts/tpot_monitor.py
