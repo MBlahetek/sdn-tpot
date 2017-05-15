@@ -1,7 +1,0 @@
-#!/bin/bash
-service ui-for-docker start
-service netdata start
-python ../reconfigure/reconfigure.py
-python ../scripts/static_flows.py
-nohup python ../scripts/simple_dos_mitigation.py &
-python ../scripts/tpot_monitor.py
