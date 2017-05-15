@@ -38,7 +38,12 @@ print "get switch ports for each container..."
 rest_api = rest_api_getter.RestApiGetter(floodlight_ip)
 ip_port_map = rest_api.get_ip_port_mapping()
 print "get switch id..."
-switch = rest_api.get_switch()
+try:
+    switch = rest_api.get_switch()
+except (UnboundLocalError, IndexError):
+    print "no switch id found"
+    quit()
+    
 
 for i in ip_port_map:
     if i[0] == glastopf_ip:
