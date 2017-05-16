@@ -20,6 +20,7 @@ class LogMonitor(object):
         self.threshold = threshold
         self.flow_entry_pusher = static_entry_pusher.StaticEntryPusher(self.controller)
         self.last_log_entry = []
+        self.blacklist_candidates = []
 
     def get_existing_ids_log_path(self):
         ids_dirs = []
@@ -28,6 +29,9 @@ class LogMonitor(object):
             if "suricata_" in dirname:
                 ids_dirs.append(dirname)
         return ids_dirs
+    
+    def block_ip(self, ip):
+        raise NotImplementedError
 
     def check_logs(self):
         ids_dirs = get_existing_ids_log_path()
@@ -50,16 +54,33 @@ class LogMonitor(object):
                     for log in log_data:
                         json_timestamp = log["timestamp"][:-5]
                         timestamp = datetime.strptime(json_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+                        # if new ids check all logs
+                        # otherwise check timestamp
                         if new_ids_dir or timestamp > last_log:
-                            # Magie: SrcIP der allerts zählen und ggf blacklisten
-                            raise NotImplementedError
+                            event_type = log["event_type"]
+                            src_ip = log["src_ip"]
+                            if event_type == "alert":
+                                # check if blacklist empty
+                                if self.blacklist_candidates:
+                                    # increase blacklist counter
+                                    for ip in self.blacklist_candidates:
+                                        if ip[0] == src_ip:
+                                            ip[1] += ip[1]
+                                            break
+                                else:
+                                    self.blacklist_candidates.append([src_ip, 1])
+                # save last timestamp for the next cycle
                 if not new_ids_dir:
-                    
-                    print timestamp
-                    
-                        
-        
-        
+                    for entry in self.last_log_entry:
+                        if ids == entry[0]:
+                            entry[1] = timestamp
+                else:
+                    self.last_log_entry.append([ids, timestamp])
+        # check blacklist counter
+        for ip in self.blacklist_candidates:
+            if ip[1] > self.threshold:
+                block_ip(ip[0])
+                     
     def cycle(self):
         while True:
             cycle = Timer(self.period, check_logs)
