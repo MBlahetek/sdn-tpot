@@ -8,8 +8,10 @@ import os
 import time
 import datetime
 import json
-import static_entry_pusher
 import docker
+import static_entry_pusher
+import rest_api_getter
+
 
 class LogMonitor(object):
     
@@ -31,7 +33,24 @@ class LogMonitor(object):
         return ids_dirs
     
     def block_ip(self, ip):
-        raise NotImplementedError
+        flow_name = "blacklisted: " + ip
+        
+        block_flow = {
+            'switch': self.switch,
+            "name": flow_name,
+            "cookie":"0",
+            "priority":"32768",
+            "in_port":"local",
+            "eth_type":"0x0800",
+            "ipv4_src": ip,
+            "ipv4_dst":"0.0.0.0/0",
+            "active":"true",
+            "idle_timeout":"43200", # half day
+            "hard_timeout":"172800", # two days
+            "actions":""
+        }
+            
+        self.flow_entry_pusher.set(block_flow)
 
     def check_logs(self):
         ids_dirs = get_existing_ids_log_path()
@@ -77,11 +96,31 @@ class LogMonitor(object):
                 else:
                     self.last_log_entry.append([ids, timestamp])
         # check blacklist counter
-        for ip in self.blacklist_candidates:
+        temp_blacklist_candidates = self.blacklist_candidates
+        for ip in temp_blacklist_candidates:
             if ip[1] > self.threshold:
                 block_ip(ip[0])
+                self.blacklist_candidates.remove([ip[0], ip[1]])
                      
     def cycle(self):
+        cycles_per_day = 864000 /self.period
+        i = 0
         while True:
             cycle = Timer(self.period, check_logs)
             cycle.start()
+            i += 1
+            if i > cycles_per_day:
+                self.blacklist_candidates = []
+                i = 0
+
+client = docker.from_env()
+floodlight = client.containers.get("floodlight")
+controller_ip = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
+rest_api = rest_api_getter.RestApiGetter(controller_ip)
+switch_id = rest_api.get_switch()
+
+period = 1800 # seconds => 1800 = 30 minutes
+threshold = 3 # alerts threshold per day
+
+monitor = LogMonitor(controller_ip, period, threshold)
+monitor.cycle()
