@@ -9,9 +9,11 @@ import os
 import time
 import json
 import docker
+import logging
 import static_entry_pusher
 import rest_api_getter
 
+logging.basicConfig(filename='log_monitor.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt="%Y-%m-%dT%H:%M:%S.%f")
 
 class LogMonitor(object):
     
@@ -51,6 +53,7 @@ class LogMonitor(object):
         }
             
         self.flow_entry_pusher.set(block_flow)
+        logging.info("blacklisted: " + ip)
 
     def check_logs(self):
         ids_dirs = self.get_existing_ids_log_path()
@@ -86,6 +89,7 @@ class LogMonitor(object):
                                     for ip in self.blacklist_candidates:
                                         if ip[0] == src_ip:
                                             ip[1] += ip[1]
+                                            logging.info("increment blacklist counter of ip: " + ip[0] + " (now: " + ip[1] + ")")
                                             break
                                 else:
                                     self.blacklist_candidates.append([src_ip, 1])

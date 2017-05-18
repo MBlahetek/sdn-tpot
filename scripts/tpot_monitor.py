@@ -9,6 +9,9 @@ import json
 import docker
 import time
 import os
+import logging
+
+logging.basicConfig(filename='tpot_monitor.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt="%Y-%m-%dT%H:%M:%S.%f")
 
 PORTS = {
     "2222":"ssh",
@@ -61,6 +64,7 @@ class TpotMonitor(object):
             suricata.exec_run("mkdir /data/suricata/log")
             self.ids_container.append(name)
         print "docker container started: " + name
+        logging.info("docker container started: " + name)
         suricata.exec_run("ifconfig eth0 promisc")
         suricata.exec_run(cmd="/usr/bin/suricata -c /etc/suricata/suricata.yaml -S \"/etc/suricata/rules/*.rules\" -i eth0", detach=True)
         time.sleep(3)
@@ -90,6 +94,7 @@ class TpotMonitor(object):
         
         push = static_entry_pusher.StaticEntryPusher(self.controller)
         push.set(ids_flow)
+        logging.info("flow entry set: " + name)
         print "flow entry set: " + name
         
     def remove_ids(self, flow):
@@ -99,14 +104,16 @@ class TpotMonitor(object):
         push = static_entry_pusher.StaticEntryPusher(self.controller)
         push.remove(ids_flow)
         print "flow entry removed: " + name
+        logging.info("flow entry removed: " + name)
         client = docker.from_env()
         suricata = client.containers.get(name)
         suricata.stop()
         print "docker container stopped: " + name
+        logging.info("docker container stopped: " + name)
         
     def cycle(self):
+        logging.info("TPot-Monitor started...")
         old_stats = []
-        print "getting first package counts..."
         json_flows = self.get_flows()
         for flow in json_flows:
             if int(flow["priority"]) > 1000:
@@ -118,7 +125,6 @@ class TpotMonitor(object):
         ids_active = []
                 
         while 1:
-            print "monitoring flows for packet increasement..."
             json_flows = self.get_flows()
             for flow in json_flows:
                 if int(flow["priority"]) > 1000 and int(flow["priority"]) <= 32700:
