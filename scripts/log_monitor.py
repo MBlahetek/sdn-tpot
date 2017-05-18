@@ -15,8 +15,8 @@ import rest_api_getter
 
 class LogMonitor(object):
     
-    def __init__(self, controller_ip, period, threshold):
-        self.controller = controller_ip
+    def __init__(self, controller, switch, period, threshold):
+        self.controller = controller
         self.switch = switch
         self.period = period
         self.threshold = threshold
@@ -122,5 +122,5 @@ switch_id = rest_api.get_switch()
 period = 1800 # seconds => 1800 = 30 minutes
 threshold = 3 # alerts threshold per day
 
-monitor = LogMonitor(controller_ip, period, threshold)
+monitor = LogMonitor(controller_ip, switch_id, period, threshold)
 monitor.cycle()
