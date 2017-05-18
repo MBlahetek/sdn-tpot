@@ -88,7 +88,7 @@ class LogMonitor(object):
                                     # increase blacklist counter
                                     for ip in self.blacklist_candidates:
                                         if ip[0] == src_ip:
-                                            ip[1] += ip[1]
+                                            ip[1] += 1
                                             logging.info("increment blacklist counter of ip: " + ip[0] + " (now: " + str(ip[1]) + ")")
                                             break
                                 else:
@@ -112,7 +112,6 @@ class LogMonitor(object):
         cycles_per_day = 864000 /self.period
         i = 0
         while True:
-            print "timer"
             self.check_logs() 
             i += 1
             if i > cycles_per_day:
