@@ -106,7 +106,7 @@ class LogMonitor(object):
         cycles_per_day = 864000 /self.period
         i = 0
         while True:
-            cycle = Timer(self.period, check_logs)
+            cycle = Timer(self.period, self.check_logs())
             cycle.start()
             i += 1
             if i > cycles_per_day:
