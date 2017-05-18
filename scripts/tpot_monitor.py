@@ -11,7 +11,7 @@ import time
 import os
 import logging
 
-logging.basicConfig(filename='tpot_monitor.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt="%Y-%m-%dT%H:%M:%S.%f")
+logging.basicConfig(filename='tpot_monitor.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt="%Y-%m-%dT%H:%M:%S")
 
 PORTS = {
     "2222":"ssh",

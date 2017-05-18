@@ -13,7 +13,7 @@ import logging
 import static_entry_pusher
 import rest_api_getter
 
-logging.basicConfig(filename='log_monitor.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt="%Y-%m-%dT%H:%M:%S.%f")
+logging.basicConfig(filename='log_monitor.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt="%Y-%m-%dT%H:%M:%S")
 
 class LogMonitor(object):
     
