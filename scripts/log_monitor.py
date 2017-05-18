@@ -101,7 +101,7 @@ class LogMonitor(object):
         temp_blacklist_candidates = self.blacklist_candidates
         for ip in temp_blacklist_candidates:
             if ip[1] > self.threshold:
-                block_ip(ip[0])
+                self.block_ip(ip[0])
                 self.blacklist_candidates.remove([ip[0], ip[1]])
                      
     def cycle(self):
