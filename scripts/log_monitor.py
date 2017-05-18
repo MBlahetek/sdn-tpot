@@ -109,12 +109,12 @@ class LogMonitor(object):
         i = 0
         while True:
             print "timer"
-            cycle = Timer(self.period, self.check_logs())
-            cycle.start()
+            self.check_logs() 
             i += 1
             if i > cycles_per_day:
                 self.blacklist_candidates = []
                 i = 0
+            time.sleep(self.period)  
 
 client = docker.from_env()
 floodlight = client.containers.get("floodlight")
