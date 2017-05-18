@@ -94,7 +94,8 @@ class LogMonitor(object):
                         if ids == entry[0]:
                             entry[1] = timestamp
                 else:
-                    self.last_log_entry.append([ids, timestamp])
+                    if timestamp is not None:
+                        self.last_log_entry.append([ids, timestamp])
         # check blacklist counter
         temp_blacklist_candidates = self.blacklist_candidates
         for ip in temp_blacklist_candidates:
