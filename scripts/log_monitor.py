@@ -125,8 +125,8 @@ controller_ip = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAdd
 rest_api = rest_api_getter.RestApiGetter(controller_ip)
 switch_id = rest_api.get_switch()
 
-period = 1800 # seconds => 1800 = 30 minutes
-threshold = 3 # alerts threshold per day
+period = 1200 # seconds => 1200 = 20 minutes
+threshold = 2 # alerts threshold per day
 
 monitor = LogMonitor(controller_ip, switch_id, period, threshold)
 monitor.cycle()
