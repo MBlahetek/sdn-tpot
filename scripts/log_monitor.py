@@ -89,7 +89,7 @@ class LogMonitor(object):
                                     for ip in self.blacklist_candidates:
                                         if ip[0] == src_ip:
                                             ip[1] += ip[1]
-                                            logging.info("increment blacklist counter of ip: " + ip[0] + " (now: " + ip[1] + ")")
+                                            logging.info("increment blacklist counter of ip: " + ip[0] + " (now: " + str(ip[1]) + ")")
                                             break
                                 else:
                                     self.blacklist_candidates.append([src_ip, 1])
