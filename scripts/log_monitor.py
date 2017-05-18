@@ -54,6 +54,7 @@ class LogMonitor(object):
 
     def check_logs(self):
         ids_dirs = self.get_existing_ids_log_path()
+        timestamp = None
         # check if there are already any log directories
         if ids_dirs:
             # check logs of each ids
