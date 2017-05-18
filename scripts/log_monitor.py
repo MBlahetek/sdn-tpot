@@ -4,9 +4,9 @@ Created on 28.04.2017
 @author: Matthias Blahetek
 '''
 from threading import Timer
+from datetime import datetime
 import os
 import time
-import datetime
 import json
 import docker
 import static_entry_pusher
