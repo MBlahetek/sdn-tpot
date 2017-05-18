@@ -53,7 +53,7 @@ class LogMonitor(object):
         self.flow_entry_pusher.set(block_flow)
 
     def check_logs(self):
-        ids_dirs = get_existing_ids_log_path()
+        ids_dirs = self.get_existing_ids_log_path()
         # check if there are already any log directories
         if ids_dirs:
             # check logs of each ids
