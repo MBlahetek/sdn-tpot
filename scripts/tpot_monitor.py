@@ -21,10 +21,11 @@ PORTS = {
 
 class TpotMonitor(object):
     
-    def __init__(self, controller, switch, polling):
+    def __init__(self, controller, switch, polling, ids_standby):
         self.controller = controller
         self.switch = switch
         self.polling = polling
+        self.ids_standby = ids_standby / polling
         self.ids_container = []
         self.rest_api = rest_api_getter.RestApiGetter(self.controller)
         self.flow_stats_path = "/wm/core/switch/" + self.switch + "/flow/json"
@@ -147,7 +148,7 @@ class TpotMonitor(object):
                                     i.append(k)
                                 else:
                                     i[4] += 1
-                                    if i[4] == 15:
+                                    if i[4] == self.ids_standby:
                                         self.remove_ids(flow)
                                         del i[4]
                                         ids_active.remove(flow["match"])
@@ -168,7 +169,8 @@ controller_ip = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAdd
 rest_api = rest_api_getter.RestApiGetter(controller_ip)
 switch_id = rest_api.get_switch()
 
-polling = 5     
+polling = 5 # check flow packet statistics every n seconds
+ids_standby = 300 # active standby without traffic in seconds
 
-monitor = TpotMonitor(controller_ip, switch_id, polling)
+monitor = TpotMonitor(controller_ip, switch_id, polling, ids_standby)
 monitor.cycle()
