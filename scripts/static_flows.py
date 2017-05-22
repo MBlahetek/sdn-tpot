@@ -16,23 +16,16 @@ floodlight_ip = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAdd
 glastopf_ip = glastopf.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
 cowrie_ip = cowrie.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAddress"]
 
-
-# generate traffic to make the hosts visible for the Controller
-# important for getting the ip - switch port - mapping in the next step
-
-
 bridge_ovs = client.networks.list('sdnnet')[0]
 k = 2
 for i in bridge_ovs.containers:
     cmd_str = "ping -c 3 172.18.0." + str(k)
     print cmd_str + "..."
     cowrie.exec_run(cmd_str)
-    k += 1
-    
-#give floodlight few seconds to update its database
-#otherwise the swith port mapping in the next step probably fails.
+    k += 1   
+# give floodlight few seconds to update its database
+# otherwise the swith port mapping in the next step probably fails.
 time.sleep(3)
-
 # get ip - switch port - mapping for dynamic pro-activ flow generation
 print "get switch ports for each container..."
 rest_api = rest_api_getter.RestApiGetter(floodlight_ip)
@@ -43,8 +36,6 @@ try:
 except (UnboundLocalError, IndexError):
     print "no switch id found"
     quit()
-    
-
 for i in ip_port_map:
     if i[0] == glastopf_ip:
         glastopf_port = i[1]
@@ -52,7 +43,6 @@ for i in ip_port_map:
         cowrie_port = i[1]
     elif i[0] == floodlight_ip:
         floodlight_port = i[1]
-
 # write all the pro-active flow rules
 print "loading pro-active flow rules..."
 flows = []
@@ -176,11 +166,8 @@ cowrie_drop = {
     "actions":""
     }
 flows.append(cowrie_drop)
-
 # send the pro-activ flow rules to the controller
-
 push = static_entry_pusher.StaticEntryPusher(floodlight_ip)
-
 for flow in flows:
     push.set(flow)
     flow_id = flow["name"]

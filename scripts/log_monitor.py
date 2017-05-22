@@ -17,13 +17,16 @@ logging.basicConfig(filename='log_monitor.log', level=logging.INFO, format='%(as
 
 class LogMonitor(object):
     
-    def __init__(self, controller, switch, period, threshold):
+    def __init__(self, controller, switch, period, threshold, soft_ban_time, hard_ban_time):
         self.controller = controller
         self.switch = switch
         self.period = period
         self.threshold = threshold
+        self.soft_ban_time = str(soft_ban_time)
+        self.hard_ban_time = str(hard_ban_time)
         self.flow_entry_pusher = static_entry_pusher.StaticEntryPusher(self.controller)
         self.last_log_entry = []
+        self.last_log_cowrie = None
         self.blacklist_candidates = []
 
     def get_existing_ids_log_path(self):
@@ -47,13 +50,24 @@ class LogMonitor(object):
             "ipv4_src": ip,
             "ipv4_dst":"0.0.0.0/0",
             "active":"true",
-            "idle_timeout":"43200", # half day
-            "hard_timeout":"172800", # two days
+            "idle_timeout": self.soft_ban_time, 
+            "hard_timeout": self.hard_ban_time,
             "actions":""
         }
             
         self.flow_entry_pusher.set(block_flow)
         logging.info("blacklisted: " + ip)
+    
+    def increment_blacklist_counter(self, ip, value):
+        if self.blacklist_candidates:
+            # increase blacklist counter
+            for candidate in self.blacklist_candidates: 
+                if candidate[0] == ip:
+                    candidate[1] += value
+                    logging.info("increment blacklist counter of ip: " + candidate[0] + " (now: " + str(candidate[1]) + ")") 
+                    break
+        else:
+            self.blacklist_candidates.append([ip, value])       
 
     def check_logs(self):
         ids_dirs = self.get_existing_ids_log_path()
@@ -83,16 +97,7 @@ class LogMonitor(object):
                             event_type = log["event_type"]
                             src_ip = log["src_ip"]
                             if event_type == "alert":
-                                # check if blacklist empty
-                                if self.blacklist_candidates:
-                                    # increase blacklist counter
-                                    for ip in self.blacklist_candidates:
-                                        if ip[0] == src_ip:
-                                            ip[1] += 1
-                                            logging.info("increment blacklist counter of ip: " + ip[0] + " (now: " + str(ip[1]) + ")")
-                                            break
-                                else:
-                                    self.blacklist_candidates.append([src_ip, 1])
+                                self.increment_blacklist_counter(src_ip, 5)
                 # save last timestamp for the next cycle
                 if not new_ids_dir:
                     for entry in self.last_log_entry:
@@ -101,6 +106,17 @@ class LogMonitor(object):
                 else:
                     if timestamp is not None:
                         self.last_log_entry.append([ids, timestamp])
+        with open("/data/cowrie/log/cowrie.json") as json_file:    
+                    for line in json_file:
+                        log_data.append(json.loads(line))
+                    for log in log_data:                        
+                        json_timestamp = log["timestamp"][:-1]
+                        timestamp = datetime.strptime(json_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+                        if self.last_log_cowrie is None or timestamp > self.last_log_cowrie:
+                            event_type = log["eventid"]
+                            src_ip = log["src_ip"]
+                            if event_type == "cowrie.login.failed":
+                                self.increment_blacklist_counter(src_ip, 1)        
         # check blacklist counter
         temp_blacklist_candidates = self.blacklist_candidates
         for ip in temp_blacklist_candidates:
@@ -125,8 +141,10 @@ controller_ip = floodlight.attrs["NetworkSettings"]["Networks"]["sdnnet"]["IPAdd
 rest_api = rest_api_getter.RestApiGetter(controller_ip)
 switch_id = rest_api.get_switch()
 
-period = 1200 # seconds => 1200 = 20 minutes
-threshold = 2 # alerts threshold per day
+period = 300 # seconds 
+threshold = 5 # suricata alert = 5 ; failed login = 1
+soft_ban = 600 # seconds 
+hard_ban = 172.800 # seconds 
 
-monitor = LogMonitor(controller_ip, switch_id, period, threshold)
+monitor = LogMonitor(controller_ip, switch_id, period, threshold, soft_ban, hard_ban)
 monitor.cycle()
