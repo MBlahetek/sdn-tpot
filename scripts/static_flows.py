@@ -47,6 +47,21 @@ for i in ip_port_map:
 print "loading pro-active flow rules..."
 flows = []
 
+ovs_bridge_drop = {
+    'switch': switch,
+    "name":"ovs_bridge_drop",
+    "cookie":"0",
+    "priority":"100",
+    "in_port":"local",
+    "eth_type":"0x0800",
+    "ipv4_src":"0.0.0.0/0",
+    "ipv4_dst":"0.0.0.0/0",
+    "active":"true",
+    "actions":""
+    }
+flows.append(ovs_bridge_drop)
+
+
 ovs_bridge = {
     'switch': switch,
     "name":"ovs_bridge",
