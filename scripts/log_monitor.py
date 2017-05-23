@@ -106,6 +106,7 @@ class LogMonitor(object):
                 else:
                     if timestamp is not None:
                         self.last_log_entry.append([ids, timestamp])
+        log_data = []
         with open("/data/cowrie/log/cowrie.json") as json_file:    
                     for line in json_file:
                         log_data.append(json.loads(line))
