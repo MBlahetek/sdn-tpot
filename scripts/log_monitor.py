@@ -107,17 +107,19 @@ class LogMonitor(object):
                     if timestamp is not None:
                         self.last_log_entry.append([ids, timestamp])
         log_data = []
+        timestamp = None
         with open("/data/cowrie/log/cowrie.json") as json_file:    
-                    for line in json_file:
-                        log_data.append(json.loads(line))
-                    for log in log_data:                        
-                        json_timestamp = log["timestamp"][:-1]
-                        timestamp = datetime.strptime(json_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
-                        if self.last_log_cowrie is None or timestamp > self.last_log_cowrie:
-                            event_type = log["eventid"]
-                            src_ip = log["src_ip"]
-                            if event_type == "cowrie.login.failed":
-                                self.increment_blacklist_counter(src_ip, 1)        
+            for line in json_file:
+                log_data.append(json.loads(line))
+            for log in log_data:                        
+                json_timestamp = log["timestamp"][:-1]
+                timestamp = datetime.strptime(json_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+                if self.last_log_cowrie is None or timestamp > self.last_log_cowrie:
+                    event_type = log["eventid"]
+                    src_ip = log["src_ip"]
+                    if event_type == "cowrie.login.failed":
+                        self.increment_blacklist_counter(src_ip, 1)
+        self.last_log_cowrie = timestamp
         # check blacklist counter
         temp_blacklist_candidates = self.blacklist_candidates
         for ip in temp_blacklist_candidates:
