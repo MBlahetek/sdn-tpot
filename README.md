@@ -17,6 +17,7 @@ cd sdn-tpot/main/
 docker-compose up -d
 pip install --upgrade python-iptables
 pip install docker
+docker pull mblahetek/suricata
 ```
 
 ### Installing
