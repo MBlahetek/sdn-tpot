@@ -61,13 +61,12 @@ ovs_bridge_drop = {
     }
 flows.append(ovs_bridge_drop)
 
-
 ovs_bridge = {
     'switch': switch,
     "name":"ovs_bridge",
     "cookie":"0",
     "priority":"11000",
-    "in_port":"local",
+    "in_port":"all",
     "eth_type":"0x0800",
     "ipv4_src":"172.18.0.0/16",
     "ipv4_dst": "172.18.0.0/16",
@@ -76,21 +75,53 @@ ovs_bridge = {
     }
 flows.append(ovs_bridge)
 
-floodlight_rest = {
+floodlight_rest_10 = {
     'switch': switch,
-    "name":"floodlight_rest",
+    "name":"floodlight_rest_10",
     "cookie":"0",
     "priority":"14000",
     "in_port":"local",
     "eth_type":"0x0800",
     "ip_proto":"0x06",
-    "ipv4_src":"0.0.0.0/0", # TODO restrict on admin ip range
+    "ipv4_src":"10.0.0.0/8",
     "ipv4_dst": floodlight_ip + "/32",
     "tcp_dst":"9090",
     "active":"true",
     "actions":"output=" + floodlight_port
     }
-flows.append(floodlight_rest)
+flows.append(floodlight_rest_10)
+
+floodlight_rest_172 = {
+    'switch': switch,
+    "name":"floodlight_rest_172",
+    "cookie":"0",
+    "priority":"14000",
+    "in_port":"local",
+    "eth_type":"0x0800",
+    "ip_proto":"0x06",
+    "ipv4_src":"172.16.0.0/12",
+    "ipv4_dst": floodlight_ip + "/32",
+    "tcp_dst":"9090",
+    "active":"true",
+    "actions":"output=" + floodlight_port
+    }
+flows.append(floodlight_rest_172)
+
+floodlight_rest_192 = {
+    'switch': switch,
+    "name":"floodlight_rest_192",
+    "cookie":"0",
+    "priority":"14000",
+    "in_port":"local",
+    "eth_type":"0x0800",
+    "ip_proto":"0x06",
+    "ipv4_src":"192.168.0.0/16",
+    "ipv4_dst": floodlight_ip + "/32",
+    "tcp_dst":"9090",
+    "active":"true",
+    "actions":"output=" + floodlight_port
+    }
+flows.append(floodlight_rest_192)
 
 floodlight_drop = {
     'switch': switch,
@@ -106,6 +137,7 @@ floodlight_drop = {
     }
 flows.append(floodlight_drop)
 
+"""
 glastopf_http = {
     'switch': switch,
     "name":"glastopf_http",
@@ -135,6 +167,7 @@ glastopf_drop = {
     "actions":""
     }
 flows.append(glastopf_drop)
+"""
  
 cowrie_ssh = {
     'switch': switch,
@@ -151,7 +184,8 @@ cowrie_ssh = {
     "actions":"output=" + cowrie_port
     }
 flows.append(cowrie_ssh)
- 
+
+""" 
 cowrie_telnet = {
     'switch': switch,
     "name":"cowrie_telnet",
@@ -167,6 +201,7 @@ cowrie_telnet = {
     "actions":"output=" + cowrie_port
     }
 flows.append(cowrie_telnet)
+"""
 
 cowrie_drop = {
     'switch': switch,
