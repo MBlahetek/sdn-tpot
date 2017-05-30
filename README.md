@@ -32,7 +32,7 @@ service elk start
 service ui-for-docker start
 service netdata start
 python ../scripts/static_flows.py
-nohup python ../scripts/simple_dos_mitigation.py &
-python ../scripts/tpot_monitor.py
+python ../scripts/tpot_monitor.py &
+python ../scripts/log_monitor.py &
 ```
 
