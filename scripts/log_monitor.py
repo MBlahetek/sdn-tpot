@@ -68,7 +68,7 @@ class LogMonitor(object):
                     break
         else:
             self.blacklist_candidates.append([ip, value])
-            logging.info("increment blacklist counter of ip: " + candidate[0] + " (now: 1)")      
+            logging.info("increment blacklist counter of ip: " + ip + " (now: 1)")      
 
     def check_logs(self):
         ids_dirs = self.get_existing_ids_log_path()
