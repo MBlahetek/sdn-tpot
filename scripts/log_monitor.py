@@ -119,7 +119,15 @@ class LogMonitor(object):
                     event_type = log["eventid"]
                     src_ip = log["src_ip"]
                     if event_type == "cowrie.login.failed":
+                        username = log["username"]
+                        password = log["password"]
+                        logging.info("login failed | ip: " + src_ip + " | username: " + username + " | password: " + password)
                         self.increment_blacklist_counter(src_ip, 1)
+                    if event_type == "cowrie.login.success":
+                        username = log["username"]
+                        password = log["password"]
+                        logging.info("login succeded | ip: " + src_ip + " | username: " + username + " | password: " + password)
+                        self.increment_blacklist_counter(src_ip, 5)
         self.last_log_cowrie = timestamp
         # check blacklist counter
         temp_blacklist_candidates = self.blacklist_candidates
