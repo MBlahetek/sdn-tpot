@@ -114,22 +114,13 @@ class TpotMonitor(object):
         
     def cycle(self):
         logging.info("TPot-Monitor started...")
-        old_stats = []
-        json_flows = self.get_flows()
-        for flow in json_flows:
-            if int(flow["priority"]) > 1000:
-                package_count = int(flow["packet_count"])
-                old_stats.append([flow["match"], flow["priority"], package_count, 0])
-                
-        time.sleep(self.polling)
-        
+        old_stats = []        
         ids_active = []
                 
         while 1:
             json_flows = self.get_flows()
             for flow in json_flows:
                 if int(flow["priority"]) > 1000 and int(flow["priority"]) <= 32700:
-                    new_flow = False
                     package_count = int(flow["packet_count"])
                     
                     for i in old_stats:                    
@@ -152,15 +143,13 @@ class TpotMonitor(object):
                                         self.remove_ids(flow)
                                         del i[4]
                                         ids_active.remove(flow["match"])
-                                        
+                            if new_package_increase != 0 and int(flow["priority"]) == 15100 and len(i) == 5:
+                                del i[4]
                             i[2] = package_count
                             i[3] = new_package_increase
-                            new_flow = False
                             break
                         else:
-                            new_flow = True
-                    if new_flow:
-                        old_stats.append([flow["match"], flow["priority"], package_count, 0])
+                            old_stats.append([flow["match"], flow["priority"], package_count, 0])
             time.sleep(self.polling)
             
 client = docker.from_env()
