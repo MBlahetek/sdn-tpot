@@ -122,6 +122,7 @@ class TpotMonitor(object):
             for flow in json_flows:
                 if int(flow["priority"]) > 1000 and int(flow["priority"]) <= 32700:
                     package_count = int(flow["packet_count"])
+                    new_flow = False
                     
                     for i in old_stats:                    
                         if flow["match"] == i[0] and flow["priority"] == i[1]:
@@ -147,9 +148,12 @@ class TpotMonitor(object):
                                 del i[4]
                             i[2] = package_count
                             i[3] = new_package_increase
+                            new_flow = False
                             break
                         else:
-                            old_stats.append([flow["match"], flow["priority"], package_count, 0])
+                            new_flow = True
+                    if new_flow:
+                        old_stats.append([flow["match"], flow["priority"], package_count, 0])
             time.sleep(self.polling)
             
 client = docker.from_env()
