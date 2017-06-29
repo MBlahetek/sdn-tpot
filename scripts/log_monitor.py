@@ -98,7 +98,7 @@ class LogMonitor(object):
                             event_type = log["event_type"]
                             src_ip = log["src_ip"]
                             if event_type == "alert":
-                                self.increment_blacklist_counter(src_ip, 5)
+                                self.increment_blacklist_counter(src_ip, self.threshold)
                 # save last timestamp for the next cycle
                 if not new_ids_dir:
                     for entry in self.last_log_entry:
@@ -127,7 +127,7 @@ class LogMonitor(object):
                         username = log["username"]
                         password = log["password"]
                         logging.info("login succeded | ip: " + src_ip + " | username: " + username + " | password: " + password)
-                        self.increment_blacklist_counter(src_ip, 5)
+                        self.increment_blacklist_counter(src_ip, self.threshold)
         self.last_log_cowrie = timestamp
         # check blacklist counter
         temp_blacklist_candidates = self.blacklist_candidates
