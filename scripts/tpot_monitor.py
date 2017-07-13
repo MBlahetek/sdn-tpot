@@ -122,7 +122,7 @@ class TpotMonitor(object):
             for flow in json_flows:
                 if int(flow["priority"]) > 1000 and int(flow["priority"]) <= 32700:
                     package_count = int(flow["packet_count"])
-                    new_flow = False
+                    new_flow = True
                     
                     for i in old_stats:                    
                         if flow["match"] == i[0] and flow["priority"] == i[1]:
