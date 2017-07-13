@@ -54,7 +54,10 @@ class LogMonitor(object):
             "hard_timeout": self.hard_ban_time,
             "actions":""
         }
-            
+        try:
+            self.flow_entry_pusher.remove(block_flow)
+        except:
+            print ""
         self.flow_entry_pusher.set(block_flow)
         logging.info("blacklisted: " + ip)
     
