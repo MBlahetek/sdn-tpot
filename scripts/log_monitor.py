@@ -85,20 +85,23 @@ class LogMonitor(object):
                         last_log = entry[1]
                         break
                 # open json log
-                log_data = []                      
-                with open("/data/" + ids + "/log/eve.json") as json_file:    
-                    for line in json_file:
-                        log_data.append(json.loads(line))
-                    for log in log_data:
-                        json_timestamp = log["timestamp"][:-5]
-                        timestamp = datetime.strptime(json_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
-                        # if new ids check all logs
-                        # otherwise check timestamp
-                        if new_ids_dir or timestamp > last_log:
-                            event_type = log["event_type"]
-                            src_ip = log["src_ip"]
-                            if event_type == "alert":
-                                self.increment_blacklist_counter(src_ip, self.threshold)
+                log_data = []
+                try:                      
+                    with open("/data/" + ids + "/log/eve.json") as json_file:    
+                        for line in json_file:
+                            log_data.append(json.loads(line))
+                        for log in log_data:
+                            json_timestamp = log["timestamp"][:-5]
+                            timestamp = datetime.strptime(json_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+                            # if new ids check all logs
+                            # otherwise check timestamp
+                            if new_ids_dir or timestamp > last_log:
+                                event_type = log["event_type"]
+                                src_ip = log["src_ip"]
+                                if event_type == "alert":
+                                    self.increment_blacklist_counter(src_ip, self.threshold)
+                except IOError:
+                    break
                 # save last timestamp for the next cycle
                 if not new_ids_dir:
                     for entry in self.last_log_entry:
