@@ -162,7 +162,7 @@ switch_id = rest_api.get_switch()
 period = 300 # seconds 
 threshold = 5 # suricata alert = 5 ; failed login = 1
 soft_ban = 600 # seconds 
-hard_ban = 172.800 # seconds 
+hard_ban = 172800 # seconds 
 
 monitor = LogMonitor(controller_ip, switch_id, period, threshold, soft_ban, hard_ban)
 monitor.cycle()
